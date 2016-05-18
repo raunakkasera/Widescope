@@ -1,0 +1,28 @@
+<% if logged_in? %>
+  <div class="row">
+    <aside class="col-md-4">
+      <section class="user_info">
+        <%= render 'shared/user_info' %>
+      </section>
+      <section class="stats">
+        <%= render 'shared/stats' %>
+      </section>
+      <section class="budgetpost_form">
+        <%= render 'shared/budgetpost_form' %>
+      </section>
+    </aside>
+    <div class="col-md-8">
+      <h3>Budget Proposals</h3>
+      <%= render 'shared/feed' %>
+    </div>
+  </div>
+ <% else %>
+	<div class="center jumbotron">
+	<h1>WideScope</h1>
+	<p>
+  	This is the home page for the
+  	<a href="http://widescope.stanford.edu/">WideScope</a>
+  	application.
+	</p>
+  <%= link_to "Sign up now!", signup_path, class: "btn btn-lg btn-primary" %>
+</div><% end %>

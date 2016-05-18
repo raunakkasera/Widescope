@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  statecode: MyString
+  period: 1
+  author: MyString
+  comments: MyString
+  user_id: 
+
+two:
+  statecode: MyString
+  period: 1
+  author: MyString
+  comments: MyString
+  user_id: 

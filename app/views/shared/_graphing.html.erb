@@ -1,0 +1,358 @@
+<div>
+<%
+#class ComparisonBudgetItem
+ # attr_accessor :statecode, :year, :supercategory, :dol, :fraction
+#end
+
+def dec2hex(number)
+    number = Integer(number);
+    hex_digit = "0123456789ABCDEF".split(//);
+    ret_hex = '';
+    while(number != 0)
+        ret_hex = String(hex_digit[number % 16 ] ) + ret_hex;
+        number = number / 16; 
+    end 
+    return ret_hex; ## Returning HEX
+end 
+
+def getColors(colornum) 
+
+	puts "colornum: " + colornum.to_s
+  
+  colorString ="&chco=0000FF"
+  if colornum < 1
+    return colorString
+  end
+  firstColor = "0000FF"
+  lastColor = "FF0000"
+  diff = lastColor.hex - firstColor.hex
+  grad = 0
+  if colornum != 0  
+    grad = diff/colornum
+  end
+  
+  for i in 1..colornum-1
+      colorDec = firstColor.hex + i*grad
+      color =  dec2hex(colorDec)
+    colorString = colorString + "|" + color
+  end
+  return colorString  
+end
+
+def cleanUpText(dirtyString, charact)
+     while dirtyString.include?charact
+        ampIndex = dirtyString.index(charact)
+        dirtyString = dirtyString [0, ampIndex] + dirtyString[ampIndex+1, dirtyString.length - ampIndex- 1]
+     end
+    return dirtyString
+end
+
+def calcMaxFract2(graphElements)
+
+	maxFraction = 0.0
+  	graphElements.each do |expense_or_resource|  
+    	fraction = expense_or_resource.fract.to_f
+		if fraction > maxFraction
+			maxFraction = fraction
+		end
+	end
+	return maxFraction
+end
+
+
+def createChartLabels( unlabeledUrl, graphElements, totalAmount, colo, maxFraction)
+  graphLabels="&chxt=y&chdl="
+	
+	#puts "maxFraction: " + maxFraction.to_s
+	
+	graphStretchRatio = 1/maxFraction
+
+  graphElements.each do |expense_or_resource|  
+    #fraction = expense_or_resource.dol.to_f/totalAmount * 100 * graphStretchRatio
+	#puts fraction
+	fraction = expense_or_resource.fract.to_f * 100 * graphStretchRatio
+	#puts fraction
+	
+    unlabeledUrl = unlabeledUrl + fraction.to_int.to_s + ","
+  	label =""
+	if expense_or_resource.supercategory != nil
+    if colo == "source" 
+      #label = cleanUpText(expense_or_resource.source, "&")
+      label = cleanUpText(expense_or_resource.supercategory, "&")
+
+    elsif colo == "expense"
+      #label = cleanUpText(expense_or_resource.expense, "&")
+      label = cleanUpText(expense_or_resource.supercategory, "&")
+
+    end
+	end
+	label  = label + " - "+ expense_or_resource.statecode
+	
+      graphLabels = graphLabels + label + "|"
+  end 
+
+  unlabeledUrl = unlabeledUrl.chop
+  graphLabels = graphLabels.chop
+  labeledUrl = unlabeledUrl + graphLabels
+
+	labeledUrl = labeledUrl + "&chxt=x,y&chxr=1,0," + (maxFraction * 100).ceil.to_s + ",10"
+	#chxr=<axis_index>,<start_val>,<end_val>,<step>
+
+	puts "labeledUrl: " + labeledUrl
+  return labeledUrl
+
+end
+
+def createBarGraphUrl( barGraphElements, colo, maxFraction)
+  
+  barGraphUrl = "http://chart.apis.google.com/chart?"
+  barGraphUrl = barGraphUrl +"cht=bvg&chs=700x400&chd=t:"
+
+ 	#barGraphUrl = barGraphUrl +"cht=bvg&chs=200x100&chd=t:"
+
+  totalAmount = 0.0
+  barGraphElements.each do |expense_or_resource|  
+    totalAmount = totalAmount + expense_or_resource.dol.to_f  
+  end
+	
+
+  barGraphUrl = createChartLabels( barGraphUrl, barGraphElements, totalAmount, colo, maxFraction)
+	puts "number of labels: "+ barGraphElements.length.to_s
+  barGraphUrl = barGraphUrl + "&bchbh=20"
+  gridLines = "&chg=100,10,1,1"
+  barGraphUrl = barGraphUrl + gridLines
+  colorString = getColors(barGraphElements.length)
+  barGraphUrl = barGraphUrl + colorString
+	labelPositions = "&chdlp=r"
+  barGraphUrl = barGraphUrl + labelPositions
+	barGraphUrl = barGraphUrl + "&chxl=1:|percentage expenditure|0:|expense area|"
+
+  #barGraphUrl = barGraphUrl + "&chco=FF0000,0000FF"
+  #barGraphUrlPrimary = barGraphUrl
+  
+  puts "barGraphUrl: " + barGraphUrl
+  return barGraphUrl
+
+end
+
+def createChartUrl( graphElements, colo, maxFraction)
+  totalAmount = 0.0
+  graphElements.each do |expense_or_resource|  
+    totalAmount = totalAmount + expense_or_resource.dol.to_f  
+  end
+
+  charturl = "http://chart.apis.google.com/chart?"
+  charturl = charturl +"cht=p&chs=500x200&chd=t:"
+
+  charturl = createChartLabels( charturl, graphElements, totalAmount, colo, maxFraction)
+  numSources = graphElements.length
+  colorString = "&chco=FF0000,0000FF"
+  
+  if numSources != nil and numSources > 0
+    #puts "got in numSources " + numSources.to_s
+    colorString = getColors(graphElements.length)
+  end
+  charturl = charturl + colorString
+  return charturl
+
+end
+
+def determineStateWithSmallestDataSet(comparisonDataArray)
+	smallestSize = comparisonDataArray[0].length
+	smallestStateIndex =  0
+	for i in 0..comparisonDataArray.length-1
+		stateData = comparisonDataArray[i] 
+		if stateData.length < smallestSize
+			smallestStateIndex = i
+		end
+	end
+	return smallestStateIndex
+end
+
+
+def checkIfCategoryIsCommonInAllStates(supercategory, comparisonDataArray, smallestDataStateIndex )
+	statesWithThisCategory = 1
+	for i in 0..comparisonDataArray.length-1
+			#each of this is one budget data
+			if i != smallestDataStateIndex
+				
+				otherStateData = comparisonDataArray[i] 
+				#check that this state has a matching supercat..if not ignore the supercat
+
+				for k in 0..otherStateData.length-1
+					other_expense_or_resource = otherStateData[k]
+					other_category = other_expense_or_resource.supercategory
+					if other_category == supercategory
+						statesWithThisCategory = statesWithThisCategory + 1
+						break
+					end
+				end
+			end
+		end
+	if statesWithThisCategory < comparisonDataArray.length
+		return false
+	else
+		return true
+	end
+
+end
+
+def addToCombinedData(localSuperCategory, combinedData, comparisonDataArray)
+
+	for i in 0..comparisonDataArray.length-1
+		stateData = comparisonDataArray[i] 
+		for j in 0..stateData.length-1
+			expense_or_resource = stateData[j]
+			category = expense_or_resource.supercategory
+			if category == localSuperCategory
+				puts "category: " + category
+				puts "localSuperCategory: " + localSuperCategory
+
+				combinedData.push(expense_or_resource)
+				break
+			end
+		end
+	end
+	#puts "****when adding*****"
+	#printCombinedData(combinedData)
+	#puts "********************"
+	return combinedData
+
+end
+
+def printCombinedData(combinedData, supercategories)
+	puts "-----------------------"
+	for i in 0..combinedData.length-1
+		expense_or_resource = combinedData[i]
+
+		puts expense_or_resource.statecode.to_s + " " + expense_or_resource.supercategory + "  " + expense_or_resource.dol.to_s + " " + expense_or_resource.fract.to_s  
+		#puts expense_or_resource.supercategory + "  " + expense_or_resource.dol.to_s + " " + expense_or_resource.fract.to_s
+	
+end
+	puts ""
+	for i in 0..supercategories.length-1
+		print supercategories[i].supercategory.to_s
+	end
+	puts ""
+	puts "-----------------------"
+end
+
+def combineComparisonData(comparisonDataArray)
+	combinedData = Array.new
+	
+	#determine smallest state date set
+	smallestDataStateIndex = determineStateWithSmallestDataSet(comparisonDataArray)
+	smallestStateData = comparisonDataArray[smallestDataStateIndex]
+
+	#check that all the other comparison states have the same name for supercategories. If not,
+	# group the non-similar supercategories under others
+	for i in 0..smallestStateData.length-1
+		expense_or_resource = smallestStateData[i]
+		localSuperCategory = expense_or_resource.supercategory 
+		categoryIsCommon = checkIfCategoryIsCommonInAllStates(localSuperCategory, comparisonDataArray, smallestDataStateIndex )
+		
+		if categoryIsCommon
+			#add this category to the comparison data set
+			combinedData = addToCombinedData(localSuperCategory, combinedData, comparisonDataArray)	
+		
+		end
+	end
+
+	return combinedData
+
+end
+
+def createSeparateComparisonData(comparisonDataArray, supercategories)
+	separateCombinedData = Array.new
+	
+	puts "%%%%%%%%%%%%%%%%%%%%%%%%"
+	for i in 0..comparisonDataArray.length-1
+			printCombinedData(comparisonDataArray[i], supercategories)
+	end
+		puts "**************%%%%%%%%%%%%%%%%%************"
+
+	for i in 0..supercategories.length-1	#add this category to the comparison data set
+			supercat = supercategories[i]
+			categoryData = Array.new
+
+			#puts "supercat in createSep: " + supercat.supercategory
+			categoryData = addToCombinedData(supercat.supercategory, categoryData, comparisonDataArray)	
+
+			printCombinedData(categoryData, supercategories)
+			separateCombinedData.push(categoryData)
+	end
+	
+	puts "%%%%%%%%%%%%%%%%%%%%%%%%"
+
+	return separateCombinedData
+
+
+end
+
+def createMultipleBarGraphUrls(separateCombinedGraphElements, colo, maxFraction)
+	graphUrls = Array.new
+	for i in 0..separateCombinedGraphElements.length-1
+
+		graphElements = separateCombinedGraphElements[i]
+		graphUrl = createBarGraphUrl(graphElements, colo, maxFraction)
+		graphUrls.push(graphUrl)
+	end
+	return graphUrls
+end
+
+def determineCategoryValue(supercat, stateDBData)
+	amount = 0.0
+	for i in 0..stateDBData.length-1
+		#puts  "comparing: " + stateDBData[i].supercategory.to_s + "----" + supercat.to_s
+		if stateDBData[i].supercategory == supercat
+			amount = stateDBData[i].fract
+			return amount
+		end
+	end
+	return amount
+
+end
+
+def generateJavaScriptData( comparisonBudgets, supercategories)
+
+	rawGraphData = Array.new
+
+	for i in 0..comparisonBudgets.length-1
+
+		stateData = Array.new
+		stateDBData = comparisonBudgets[i]
+		stateData.push(stateDBData[0].statecode)
+
+		for j in 0..supercategories.length-1
+			amountFraction = determineCategoryValue(supercategories[j].supercategory, stateDBData)
+			stateData.push(amountFraction)
+		end
+		rawGraphData.push(stateData)
+	end
+
+	return rawGraphData
+end
+
+def generateSuperCategoryNames(supercategories)
+	supercatNames = Array.new
+	for i in 0..supercategories.length-1
+		supercatNames.push(supercategories[i].supercategory)
+	end
+	return supercatNames
+
+end
+
+def printJavaScriptData(javaScriptData)
+	for i in 0..javaScriptData.length-1
+		stateData = javaScriptData[i]
+		puts ""
+		for j in 0..stateData.length-1
+			print stateData[j].to_s + "\t"
+		end
+		puts ""
+	end
+end
+
+
+%>
+</div>

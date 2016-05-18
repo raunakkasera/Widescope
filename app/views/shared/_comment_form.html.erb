@@ -1,0 +1,9 @@
+<%= form_for([budgetpost, @comment]) do |f| %>
+<%= render 'shared/error_messages', object: f.object %>
+  <div class="field">
+    <%= f.text_area :content, placeholder: "Allocate funds for this sector..." %>
+  </div>
+  <button class="btn" type="submit">
+    Allocations (<%= budgetpost.comments.count %>)
+  </button>
+<% end %>

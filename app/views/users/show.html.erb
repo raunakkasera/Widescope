@@ -1,0 +1,67 @@
+<!-- <% provide(:title, @user.name) %>
+<div class="row">
+  <aside class="col-md-4">
+    <section class="user_info">
+      <h1>
+        <%= gravatar_for @user %>
+        <%= @user.name %>
+      </h1>
+    </section>
+    <section class="stats">
+      <%= render 'shared/stats' %>
+    </section>
+  </aside>
+  <div class="col-md-8">
+   <%= render 'follow_form' if logged_in? %>
+    <% if @user.budgetposts.any? %>
+      <h3>Budget Proposals (<%= @user.budgetposts.count %>)</h3>
+      <ol class="budgetposts">
+        <%= render @budgetposts %>
+      </ol>
+      <%= will_paginate @budgetposts %>
+    <% end %>
+  </div>
+</div> -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+  
+  </head>
+  <body style="font-family: Arial;border: 0 none;">
+  <%= link_to 'Home', "/" %>
+  <%#TODO - Investigate: should the graphing partial be in head or body?%>
+  
+
+  <%#= render :partial => 'shared/filterCategories', :locals => {:pageTitle => " Budget Items", :controller => "budget_items", 
+:budgetSide => "expense",:budgetTableColumn => "expense"} %>
+
+  
+  <table>
+    <tr><td width="70%" valign="top"">
+    <%= render :partial => 'shared/googleGraph', :locals => {:pageTitle => " Budget Items", :controller => "budget_items", 
+:budgetSide => "expense",:budgetTableColumn => "expense"} %>
+  <% if (@javascriptGraphData != nil and @javascriptGraphData.length > 0 and @superCategories != nil) %>
+      <div id="visualization" style="width: 1100px; height: 700px;"></div>
+  <%else%>
+    <h2> No data is available for <%=@state%></h2>
+  <%end%>
+  
+  <%#= render :partial => 'shared/compare', :locals => {:pageTitle => " Budget Items", :controller => "budget_items", 
+:budgetSide => "expense",:budgetTableColumn => "expense"} %>
+</td>
+<td>
+  <%= render :partial => 'shared/comments', :locals => {:pageTitle => " Budget Items", :controller => "budget_items",:budgetTableColumn => "expense"} %>
+</td>
+</tr>
+</table>  
+    
+<%# if (@javascriptGraphData == nil or @superCategories == nil) %>
+      
+  <%#= render :partial => 'shared/filter', :locals => {:pageTitle => " Budget Items", :controller => "budget_items", 
+:budgetSide => "expense",:budgetTableColumn => "expense"} %>
+<%#end%>
+  </body>
+</html>

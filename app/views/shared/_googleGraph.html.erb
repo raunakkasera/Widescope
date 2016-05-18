@@ -1,0 +1,76 @@
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">google.load('visualization', '1', {packages: ['corechart']}); </script>
+<script type="text/javascript">
+	
+function drawVisualization() {
+        // Create and populate the data table.
+        var data = new google.visualization.DataTable();
+		
+		var raw_data = new Array();
+		<%if (@javascriptGraphData != nil and @javascriptGraphData.length > 0 and @superCategories != nil) %>
+		
+			raw_data = [
+           <% for j in 0..@javascriptGraphData.length-2 %>
+		   	<%state_data= @javascriptGraphData[j] %>
+			[	<%firstExp = state_data[0]%>
+				"<%= firstExp%>",
+             <% for i in 1..state_data.length-2 %> 
+			 	<%catExp = state_data[i]%>
+			 	<%= catExp %>,
+           	<% end %>
+			
+			<%lastCatExp= state_data[state_data.length-1] %>
+			<%= lastCatExp %>
+			],
+		   <%end%>
+		   
+		   <%lastStateData = @javascriptGraphData[@javascriptGraphData.length-1] %>
+			[<%firstExp = lastStateData[0]%>
+				"<%= firstExp%>",
+		   <% for i in 1..lastStateData.length-2 %> 
+			 	<%catExp = lastStateData[i]%>
+			 	<%= catExp %>,
+           	<% end %>
+			<%lastCatExp= lastStateData[lastStateData.length-1] %>
+			<%= lastCatExp%>
+			]
+           ];
+		
+		<%@superCatNames = generateSuperCategoryNames(@superCategories) %>
+      
+		var categories =[
+		<% for i in 0..@superCatNames.length-1%>
+			<%supercat = @superCatNames[i] %>
+			"<%= supercat%>",
+		<%end%>
+		];
+                        
+        data.addColumn('string', 'Category');
+        for (var i = 0; i  < raw_data.length; ++i) {
+			data.addColumn('number', raw_data[i][0]);
+		  }
+        
+        data.addRows(categories.length);
+        for (var j = 0; j < categories.length; ++j) {    
+          data.setValue(j, 0, categories[j].toString());    
+        }
+		for (var i = 0; i  < raw_data.length; ++i) {
+          for (var j = 1; j  < raw_data[i].length; ++j) {
+            data.setValue(j-1, i+1, raw_data[i][j]);    
+          }
+        }
+        
+        // Create and draw the visualization.
+        new google.visualization.BarChart(document.getElementById('visualization')).
+            draw(data,
+                 {title:"Budget Comparison Fractions", 
+                  width:800, height:600,
+                  hAxis: {title: "fraction of total"},
+				  vAxis: {title: "Category"}
+				  }
+            );
+			<%end%>
+      }
+	        
+      google.setOnLoadCallback(drawVisualization);
+    </script>

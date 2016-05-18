@@ -1,0 +1,61 @@
+<li id="budgetpost-<%= budgetpost.id %>">
+  <%= link_to gravatar_for(budgetpost.user, size: 50), budgetpost.user %>
+  <span class="user"><%= link_to budgetpost.user.name, budgetpost.user %></span>
+  <span class="content">
+    <%= budgetpost.content %>
+    <%= image_tag budgetpost.picture.url if budgetpost.picture? %>
+  </span>
+  <span class="timestamp">
+    Posted <%= time_ago_in_words(budgetpost.created_at) %> ago.
+    <% if current_user?(budgetpost.user) %>
+      <%= link_to "delete", budgetpost, method: :delete,
+                                       data: { confirm: "You sure?" } %>
+    <% end %>
+  </span>
+  <%= render 'shared/comment_form', budgetpost: budgetpost %>
+  <%= render 'comments/comment', budgetpost: budgetpost %>
+</li>
+
+<!--
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+  
+  </head>
+  <body style="font-family: Arial;border: 0 none;">
+  <%= link_to 'Home', "/" %>
+  <%#TODO - Investigate: should the graphing partial be in head or body?%>
+  
+
+  <%#= render :partial => 'shared/filterCategories', :locals => {:pageTitle => " Budget Items", :controller => "budget_items", 
+:budgetSide => "expense",:budgetTableColumn => "expense"} %>
+
+  <table>
+    <tr><td width="70%" valign="top"">
+    <%= render :partial => 'shared/googleGraph', :locals => {:pageTitle => " Budget Items", :controller => "budget_items", 
+    :budgetSide => "expense",:budgetTableColumn => "expense"} %>
+  <% if (@javascriptGraphData != nil and @javascriptGraphData.length > 0 and @superCategories != nil) %>
+      <div id="visualization" style="width: 1100px; height: 700px;"></div>
+  <%else%>
+    <h2> No data is available for <%=@state%></h2>
+  <%end%>
+  
+  <%#= render :partial => 'shared/compare', :locals => {:pageTitle => " Budget Items", :controller => "budget_items", 
+:budgetSide => "expense",:budgetTableColumn => "expense"} %>
+</td>
+<td>
+  <%= render :partial => 'shared/comment_form', :locals => {:pageTitle => " Budget Items", :controller => "budgetposts_controller", :budgetTableColumn => "expense",:budgetpost => budgetpost} %>
+</td>
+</tr>
+</table>  
+
+<%# if (@javascriptGraphData == nil or @superCategories == nil) %>
+      
+  <%#= render :partial => 'shared/filter', :locals => {:pageTitle => " Budget Items", :controller => "budget_items", 
+:budgetSide => "expense",:budgetTableColumn => "expense"} %>
+<%#end%>
+  </body>
+</html>
+-->
