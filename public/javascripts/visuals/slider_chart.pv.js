@@ -1,3 +1,5 @@
+$.getScript("/javascripts/visuals/annotation_icons.js", function() {});
+
 var SliderChart = $.Class.create({
   initialize: function(config) {
     this.cats = pv.keys(config['data']);

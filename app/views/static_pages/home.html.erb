@@ -1,6 +1,7 @@
+<script src="/javascripts/visuals/annotation_icons.js" type="text/javascript"></script>
 <% if logged_in? %>
   <div class="row">
-    <aside class="col-md-4">
+    <aside class="col-md-5">
       <section class="user_info">
         <%= render 'shared/user_info' %>
       </section>
@@ -11,7 +12,7 @@
         <%= render 'shared/budgetpost_form' %>
       </section>
     </aside>
-    <div class="col-md-8">
+    <div class="col-md-7">
       <h3>Budget Proposals</h3>
       <%= render 'shared/feed' %>
     </div>
