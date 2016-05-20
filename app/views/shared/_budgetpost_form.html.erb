@@ -1,6 +1,17 @@
 <%= form_for(@budgetpost, html: { multipart: true }) do |f| %>
   <%= render 'shared/error_messages', object: f.object %>
-  <div class="field">
+  
+  <div class="range-wrapper">
+    <div class="text">Social Security</div>
+  <input type="range" min="0" max="20" id="myRange"/>
+  <div class="text"></div>
+</div>
+<div class="range-wrapper">
+<div class="text">National Defense</div>
+  <input type="range" min="0" max="20" id="mySecondRange"/>
+  <div class="text"></div>
+</div>
+<div class="field">
     <%= f.text_area :content, placeholder: "Compose new budget proposal..." %>
   </div>
   <%= f.submit "Propose", class: "btn btn-primary" %>
@@ -16,4 +27,37 @@
       alert('Maximum file size is 5MB. Please choose a smaller file.');
     }
   });
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    updateRangeValue($('input[type=range]'));
+    $('input[type=range]').on('input change',function(){
+        var input = $(this);
+        updateRangeValue(input);
+    });    
+});
+function getRangeGradient(color1,color2,value,maximum){
+    var gradient = "linear-gradient(to right, ";
+    var breakPoint = (value/maximum)*100;
+    
+    var attrValue = gradient + color1 + " 0%, " + color1 + " " + breakPoint + "%, " + color2 + " " + breakPoint + "%, " + color2 + " 100%)";
+    return attrValue;
+}
+function updateRangeValue(input){
+    var selectedColor = "#428bca";
+    var nonSelectedColor = "#ddd";
+
+    var value = input.val();
+    var maximum = input.attr('max');
+    var minimum = input.attr('min'); 
+    var inputWidth = input.width();
+    var background = getRangeGradient(selectedColor, nonSelectedColor, value, maximum);
+    
+    var offLeft = Math.floor((value / maximum) * inputWidth - (((value / maximum) * inputWidth - inputWidth/2) / 100));    
+    var offLeftAbs = value == maximum ? input.offset().left - 6 + offLeft : (value == minimum ? input.offset().left + 5 + offLeft : input.offset().left + offLeft);
+    input.next('.text').css({'left': (offLeftAbs - 75) +'px'});
+    input.next('.text').html(value);
+    input.css('background', background); 
+}
 </script>

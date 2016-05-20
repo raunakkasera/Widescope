@@ -1,0 +1,85 @@
+<% content_for :head do %>
+  <%= javascript_include_tag 'protovis' %>
+  <%= javascript_include_tag :plugins %>
+  <%= javascript_include_tag :visuals %>
+  <style>
+    body.bp h3 {
+      margin: 0;
+      padding: 0.5em;
+    }
+    body.bp td {
+      vertical-align: top;
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+<% end %>
+<div class="one-col">
+  <div class="content">
+    <script type="text/javascript">
+      var states = $.parseJSON('<%=raw @states.to_json %>'),
+          data = {
+            revenue: $.parseJSON('<%=raw @revenues_by_category.to_json %>'),
+            expense: $.parseJSON('<%=raw @expenses_by_category.to_json %>')
+          },
+          proposal_data = {
+            expense: pv.dict(pv.keys(data.expense), function(c) { return data.expense[c].slice(0); }),
+            revenue: pv.dict(pv.keys(data.revenue), function(c) { return data.revenue[c].slice(0); })
+          },
+          totals_data = {
+            expense: new Array(states.length),
+            revenue: new Array(states.length)
+          },
+          calculate_balance = function(e) {
+            var expense = $('#total-expense').text().match(new RegExp('[0-9.]', 'g')).join('')
+            var revenue = $('#total-revenue').text().match(new RegExp('[0-9.]', 'g')).join('')
+            $('#total-balance').text('$ ' + $.formatNumber(revenue - expense, {format:"#,###.00", local:"us"}));
+          };
+      $(document).bind('total_changed', calculate_balance);
+      $(document).ready(calculate_balance);
+    </script>
+    <div class="three-col">
+      <div class="column1">
+        <h3>Expenses<br/><span id="total-expense"></span></h3>
+      </div>
+      <div class="column2" style="text-align:center;">
+        <h3 style="font-weight:bold;"><span id="state-code-title"><%= @states[0] %></span> Budget, 2008<br/><span style="font-weight:normal;">Balance: <span id="total-balance"></span></span></h3>
+      </div>
+      <div class="column3" style="text-align:right;">
+        <h3>Revenue<br/><span id="total-revenue"></span></h3>
+      </div>
+    </div>
+    <div class="two-col" style="border-top:1px solid black;">
+      <div class="column1">
+        <%=
+          render :partial => 'vis/expense_bars', :locals => {
+            :states_var => 'states',
+            :data_var => 'data.expense',
+            :proposal_var => 'proposal_data.expense',
+            :totals_var => 'totals_data.expense',
+            :align => 'left',
+            :normalized => false,
+            :editable => true,
+            :total_id => 'total-expense'
+          }
+        %>
+      </div>
+      <div class="column2">
+        <%=
+          render :partial => 'vis/revenue_bars', :locals => {
+            :states_var => 'states',
+            :data_var => 'data.revenue',
+            :proposal_var => 'proposal_data.revenue',
+            :totals_var => 'totals_data.revenue',
+            :normalized => false,
+            :editable => true,
+            :total_id => 'total-revenue'
+          }
+        %>
+      </div>
+    </div>
+    <div style="text-align:center;margin:2em;">
+      <%= render :partial => 'shared/proposal_form' %>
+    </div>
+  </div>
+</div>

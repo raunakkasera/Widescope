@@ -1,0 +1,112 @@
+<% content_for :head do %>
+  <%= javascript_include_tag 'protovis' %>
+  <%= javascript_include_tag :plugins %>
+  <%= javascript_include_tag :visuals %>
+  <style type="text/css">
+    body.bp td {
+      vertical-align: top;
+      padding: 0;
+    }
+    .sidebar-right .column1 h1 {
+      border-bottom: 1px solid #ddd;
+      margin: 0;
+      padding: 0.5em;
+      text-align: center;
+    }
+  </style>
+<% end %>
+<% if @restored_params %>
+  <%=
+    render :partial => 'shared/proposal_form', :locals => {
+      :states => @restored_params['states'],
+      :proposal_data => @restored_params['proposal_data'],
+      :totals_data => @restored_params['totals_data'],
+      :auto_submit => true
+    }
+  %>
+<% else %>
+  <script type="text/javascript">
+    var states = $.parseJSON('<%=raw @states.to_json %>')
+        data = {
+          revenue: $.parseJSON('<%=raw @revenues_by_category.to_json %>'),
+          expense: $.parseJSON('<%=raw @expenses_by_category.to_json %>')
+        };
+  </script>
+  <div class="sidebar-right">
+    <div class="column1">
+      <table cellspacing="0" cellpadding="0" border="0">
+        <tr>
+          <td><h1>Expenses</h1></td>
+          <td><h1>Revenues</h1></td>
+        </tr>
+        <tr>
+          <td>
+            <%=
+              render :partial => 'vis/expense_bars', :locals => {
+                :states_var => 'states',
+                :data_var => 'data.expense',
+                :width => 200,
+                :normalized => false
+              }
+            %>
+          </td>
+          <td>
+            <%=
+              render :partial => 'vis/revenue_bars', :locals => {
+                :states_var => 'states',
+                :data_var => 'data.revenue',
+                :width => 200,
+                :normalized => false
+              }
+            %>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="column2" style="border-left:1px solid #ddd;">
+      <div class="sidebar-widget" style="padding-bottom:1em;">
+        <% @states.each do |state| %>
+          <p style="margin-bottom:0;">
+            <% budget = @budgets.select {|b| b.statecode == state}.first %>
+            <%= link_to "Edit #{budget.author}'s #{budget.year} #{state} budget...", edit_budget_path(budget, :states => [state].to_json) %>
+          </p>
+          <% if false and @states.size > 1 %>
+            <p class="small">
+              <%= link_to "with comparisons...", edit_budget_path(@budgets.select {|b| b.statecode == state}.first, :states => (@states.sort {|x,y| x == state ? -1 : 1}).to_json) %>
+            </p>
+          <% end %>
+        <% end %>
+      </div>
+      <hr />
+      <div class="sidebar-widget">
+        <h2>Related Budgets</h2>
+        <table>
+          <% @budgets_related_by_author.each do |budget| %>
+            <tr>
+              <td>
+                <div><%= link_to "#{budget.author}'s #{budget.year} #{budget.statecode} budget", url_for(budget) %></div>
+
+              </td>
+            </tr>
+          <% end %>
+        </table>
+        <hr/>
+        <table>
+          <% @budgets_related_by_state.each do |budget| %>
+            <tr>
+              <td>
+                <%= link_to "#{budget.author}'s #{budget.year} #{budget.statecode} budget", url_for(budget) %>
+
+              </td>
+            </tr>
+          <% end %>
+        </table>
+      </div>
+      <hr/>
+      <div class="sidebar-widget">
+      	<% author = params[:authors].first %>
+        <%= render :partial => 'shared/comments', :locals => {:pageTitle => author, :controller => "budget_items",:budgetTableColumn => "expense"} %>
+      </div>
+    </div>
+  </div>
+<% end %>

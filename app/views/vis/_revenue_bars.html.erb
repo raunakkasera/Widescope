@@ -1,0 +1,60 @@
+
+<%
+  editable = false if local_assigns[:editable].nil?
+  normalized = false if local_assigns[:normalized].nil?
+  align = 'left' if local_assigns[:align].nil?
+  total_id = 'undefined' if local_assigns[:total_id].nil?
+  width = 250 if local_assigns[:width].nil?
+  bar_height = 20 if local_assigns[:bar_height].nil?
+  proposal_var = 'undefined' if local_assigns[:proposal_var].nil?
+  totals_var = 'undefined' if local_assigns[:totals_var].nil?
+%>
+<div id="revenue-bars">
+  <script type="text/javascript">
+    var revenue_bars_config = {
+          states: <%= states_var %>,
+          data: <%= data_var %>,
+          proposal: <%= proposal_var %>,
+          totals: <%= totals_var %>,
+          width: <%= width %>,
+          bar_height: <%= bar_height %>,
+          align: '<%= align %>',
+          editable: <%= editable %>,
+          normalized: <%= normalized %>,
+          total_id: '<%= total_id %>',
+          scale: 1000
+        },
+        revenue_bars = new SliderChart(revenue_bars_config);
+    revenue_bars.evenColor = '#0a0';
+    revenue_bars.oddColor = '#0a0';
+    revenue_bars.render();
+    $('#total-revenue').text('$ ' + $.formatNumber(pv.sum(pv.values(revenue_bars.proposal).map(function(d) { return d[0]; })) * revenue_bars.totals[0] * 1000, {format:"#,###.00", locale:"us"}));
+    var updateRevenueVis = function() {
+      init_data(revenue_bars_config.states);
+      revenue_bars_config.data = data.revenue;
+      revenue_bars_config.proposal = proposal_data.revenue;
+      $('#revenue-bars').find('span').remove();
+      revenue_bars = new SliderChart(revenue_bars_config);
+      revenue_bars.oddColor = '#0a0';
+      revenue_bars.evenColor = '#0a0';
+      revenue_bars.render();
+      $('#total-revenue').text('$ ' + $.formatNumber(pv.sum(pv.values(revenue_bars.proposal).map(function(d) { return d[0]; })) * revenue_bars.totals[0], {format:"#,###.00", locale:"us"}));
+      $(document).find('span').last().appendTo($('#revenue-bars'));
+    };
+    $(document).bind('select_state', function(e, state_code) {
+      revenue_bars_config.states = $.grep(revenue_bars_config.states, function(v) { return v != revenue_bars_config.states[0]; });
+      revenue_bars_config.states = $.grep(revenue_bars_config.states, function(v) { return v != state_code; });
+      revenue_bars_config.states.unshift(state_code);
+      updateRevenueVis();
+    })
+    var revenueAddRemoveHandler = function(e, state_code) {
+      revenue_bars_config.states = $.grep(revenue_bars_config.states, function(v) { return v != state_code; });
+      if (e.type == 'add_state') {
+        revenue_bars_config.states.push(state_code);
+      }
+      updateRevenueVis();
+    };
+    $(document).bind('add_state', revenueAddRemoveHandler);
+    $(document).bind('remove_state', revenueAddRemoveHandler);
+  </script>
+</div>

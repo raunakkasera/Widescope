@@ -1,0 +1,65 @@
+<%
+  editable = false if local_assigns[:editable].nil?
+  normalized = false if local_assigns[:normalized].nil?
+  align = 'left' if local_assigns[:align].nil?
+  total_id = 'undefined' if local_assigns[:total_id].nil?
+  width = 250 if local_assigns[:width].nil?
+  bar_height = 20 if local_assigns[:bar_height].nil?
+  proposal_var = 'undefined' if local_assigns[:proposal_var].nil?
+  totals_var = 'undefined' if local_assigns[:totals_var].nil?
+%>
+<div style="text-align:right;" id="expense-bars">
+  <script type="text/javascript">
+    var expense_bars_config = {
+          states: <%= states_var %>,
+          data: <%= data_var %>,
+          proposal: <%= proposal_var %>,
+          totals: <%= totals_var %>,
+          width: <%= width %>,
+          bar_height: <%= bar_height %>,
+          align: '<%= align %>',
+          editable: <%= editable %>,
+          normalized: <%= normalized %>,
+          total_id: '<%= total_id %>',
+          scale: 1000
+        },
+        expense_bars = new SliderChart(expense_bars_config);
+    var tmpColor = expense_bars.lessColor;
+    expense_bars.lessColor = expense_bars.moreColor;
+    expense_bars.moreColor = tmpColor;
+    expense_bars.oddColor = '#d00';
+    expense_bars.evenColor = '#d00';
+    expense_bars.render();
+    $('#total-expense').text('$ -' + $.formatNumber(pv.sum(pv.values(expense_bars.proposal).map(function(d) { return d[0]; })) * expense_bars.totals[0] * 1000, {format:"#,###.00", locale:"us"}));
+    var updateExpenseVis = function() {
+      init_data(expense_bars_config.states);
+      expense_bars_config.data = data.expense;
+      expense_bars_config.proposal = proposal_data.expense;
+      $('#expense-bars').find('span').remove();
+      expense_bars = new SliderChart(expense_bars_config);
+      var tmpColor = expense_bars.lessColor;
+      expense_bars.lessColor = expense_bars.moreColor;
+      expense_bars.moreColor = tmpColor;
+      expense_bars.oddColor = '#d00';
+      expense_bars.evenColor = '#d00';
+      expense_bars.render();
+      $('#total-expense').text('$ -' + $.formatNumber(pv.sum(pv.values(expense_bars.proposal).map(function(d) { return d[0]; })) * expense_bars.totals[0], {format:"#,###.00", locale:"us"}));
+      $(document).find('span').last().appendTo($('#expense-bars'));
+    };
+    $(document).bind('select_state', function(e, state_code) {
+      expense_bars_config.states = $.grep(expense_bars_config.states, function(v) { return v != expense_bars_config.states[0]; });
+      expense_bars_config.states = $.grep(expense_bars_config.states, function(v) { return v != state_code; });
+      expense_bars_config.states.unshift(state_code);
+      updateExpenseVis();
+    })
+    var expenseAddRemoveHandler = function(e, state_code) {
+      expense_bars_config.states = $.grep(expense_bars_config.states, function(v) { return v != state_code; });
+      if (e.type == 'add_state') {
+        expense_bars_config.states.push(state_code);
+      }
+      updateExpenseVis();
+    };
+    $(document).bind('add_state', expenseAddRemoveHandler);
+    $(document).bind('remove_state', expenseAddRemoveHandler);
+  </script>
+</div>
