@@ -1,6 +1,29 @@
 <li id="budgetpost-<%= budgetpost.id %>">
   <%= link_to gravatar_for(budgetpost.user, size: 50), budgetpost.user %>
   <span class="user"><%= link_to budgetpost.user.name, budgetpost.user %></span>
+  <table>
+    <tr>
+      <td>
+        <%=
+           render :partial => 'vis/expense_bars', :locals => {
+             :states_var => 'states',
+             :data_var => 'data.expense',
+             :align => 'right',
+             :normalized => true
+           }
+         %>
+       </td>
+       <td>
+         <%=
+           render :partial => 'vis/revenue_bars', :locals => {
+             :states_var => 'states',
+             :data_var => 'data.revenue',
+             :normalized => true
+           }
+         %>
+       </td>
+      </tr>
+    </table>
   <span class="content">
     <%= budgetpost.content %>
     <%= image_tag budgetpost.picture.url if budgetpost.picture? %>
