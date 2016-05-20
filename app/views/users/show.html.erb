@@ -41,7 +41,7 @@
   
   <table>
     <tr><td width="70%" valign="top"">
-    <%= render :partial => 'shared/googleGraph', :locals => {:pageTitle => " Budget Items", :controller => "budget_items", 
+    <%#= render :partial => 'shared/googleGraph', :locals => {:pageTitle => " Budget Items", :controller => "budget_items", 
 :budgetSide => "expense",:budgetTableColumn => "expense"} %>
   <% if (@javascriptGraphData != nil and @javascriptGraphData.length > 0 and @superCategories != nil) %>
       <div id="visualization" style="width: 1100px; height: 700px;"></div>
@@ -53,7 +53,7 @@
 :budgetSide => "expense",:budgetTableColumn => "expense"} %>
 </td>
 <td>
-  <%= render :partial => 'shared/comments', :locals => {:pageTitle => " Budget Items", :controller => "budget_items",:budgetTableColumn => "expense"} %>
+  <%#= render :partial => 'shared/comments', :locals => {:pageTitle => " Budget Items", :controller => "budget_items",:budgetTableColumn => "expense"} %>
 </td>
 </tr>
 </table>  
