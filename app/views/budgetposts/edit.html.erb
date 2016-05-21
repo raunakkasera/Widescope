@@ -3,83 +3,78 @@
   <%= javascript_include_tag :plugins %>
   <%= javascript_include_tag :visuals %>
   <style>
-    body.bp h3 {
-      margin: 0;
-      padding: 0.5em;
+    h1, h2 {
+      border-bottom: 2px solid black;
+      border-top: 2px solid black;
+      padding: 20px 0;
+      text-align: center;
     }
-    body.bp td {
-      vertical-align: top;
-      padding: 0;
-      margin: 0;
+    p {
+      text-align: center;
     }
   </style>
 <% end %>
-<div class="one-col">
-  <div class="content">
-    <script type="text/javascript">
-      var states = $.parseJSON('<%=raw @states.to_json %>'),
-          data = {
-            revenue: $.parseJSON('<%=raw @revenues_by_category.to_json %>'),
-            expense: $.parseJSON('<%=raw @expenses_by_category.to_json %>')
-          },
-          proposal_data = {
-            expense: pv.dict(pv.keys(data.expense), function(c) { return data.expense[c].slice(0); }),
-            revenue: pv.dict(pv.keys(data.revenue), function(c) { return data.revenue[c].slice(0); })
-          },
-          totals_data = {
-            expense: new Array(states.length),
-            revenue: new Array(states.length)
-          },
-          calculate_balance = function(e) {
-            var expense = $('#total-expense').text().match(new RegExp('[0-9.]', 'g')).join('')
-            var revenue = $('#total-revenue').text().match(new RegExp('[0-9.]', 'g')).join('')
-            $('#total-balance').text('$ ' + $.formatNumber(revenue - expense, {format:"#,###.00", local:"us"}));
-          };
-      $(document).bind('total_changed', calculate_balance);
-      $(document).ready(calculate_balance);
-    </script>
-    <div class="three-col">
-      <div class="column1">
-        <h3>Expenses<br/><span id="total-expense"></span></h3>
-      </div>
-      <div class="column2" style="text-align:center;">
-        <h3 style="font-weight:bold;"><span id="state-code-title"><%= @states[0] %></span> Budget, 2008<br/><span style="font-weight:normal;">Balance: <span id="total-balance"></span></span></h3>
-      </div>
-      <div class="column3" style="text-align:right;">
-        <h3>Revenue<br/><span id="total-revenue"></span></h3>
-      </div>
-    </div>
-    <div class="two-col" style="border-top:1px solid black;">
-      <div class="column1">
-        <%=
-          render :partial => 'vis/expense_bars', :locals => {
-            :states_var => 'states',
-            :data_var => 'data.expense',
-            :proposal_var => 'proposal_data.expense',
-            :totals_var => 'totals_data.expense',
-            :align => 'left',
-            :normalized => false,
-            :editable => true,
-            :total_id => 'total-expense'
-          }
-        %>
-      </div>
-      <div class="column2">
-        <%=
-          render :partial => 'vis/revenue_bars', :locals => {
-            :states_var => 'states',
-            :data_var => 'data.revenue',
-            :proposal_var => 'proposal_data.revenue',
-            :totals_var => 'totals_data.revenue',
-            :normalized => false,
-            :editable => true,
-            :total_id => 'total-revenue'
-          }
-        %>
-      </div>
-    </div>
-    <div style="text-align:center;margin:2em;">
-      <%= render :partial => 'shared/proposal_form' %>
-    </div>
+<script type="text/javascript">
+  var states = ['CA', 'ND', 'VT'],
+      categories = {
+        expense: [
+          "Education",
+          "Legislative",
+          "Law Enforcement",
+          "Parks & Recreation",
+          "Public Works",
+          "Arts",
+          "Transportation",
+          "Waste Management"
+        ],
+        revenue: [
+          "Sales Tax",
+          "Property Tax",
+          "Income Tax",
+          "Bearer Bonds",
+          "Fees & Charges"
+        ]
+      },
+      data = {
+        expense: pv.range(categories.expense.length).map(function() {
+          return [Math.random(), Math.random(), Math.random()];
+        }),
+        revenue: pv.range(categories.revenue.length).map(function() {
+          return [Math.random(), Math.random(), Math.random()];
+        }) 
+      },
+      proposal_data = {
+        expense: pv.dict(categories.expense, function(c) {
+          return data.expense[categories.expense.indexOf(c)].slice(0);
+        }),
+        revenue: pv.dict(categories.revenue, function(c) {
+          return data.revenue[categories.revenue.indexOf(c)].slice(0);
+        })
+      };
+</script>
+<div class="two-col">
+  <div class="column1">
+    <h1 style="text-align:center;">Change...</h1>
+    <p>Select a state's budget to change.</p>
+    <%= render :partial => 'vis/states_map' %>
+    <br/>
+  </div>
+  <div class="column2">
+    <h1 style="text-align:center;">Compare to...</h1>
+    <p>Select state(s) to overlay relative budgets.</p>
+    <%= render :partial => 'vis/states_map' %>
+    <br/>
+  </div>
+</div>
+<div class="two-col">
+  <div class="column1" style="border-right:1px solid black;height:100%;">
+    <h2 style="text-align:center;margin:0;">Expenses</h2>
+    <%= render :partial => 'vis/expense_bars' %>
+  </div>
+  <div class="column2">
+    <h2 style="text-align:center;margin:0;">Revenues</h2>
+    <%= render :partial => 'vis/revenue_bars' %>
+  </div>
+  <div class="footer">
   </div>
 </div>
