@@ -1,0 +1,17 @@
+<% content_for :head do %>
+  <%= javascript_include_tag 'data/us_lowres', 'utils/centroid' %>
+<% end %>
+<div style="text-align:center;">
+  <script type="text/javascript">
+    var states_data = ['CA', 'ND', 'VT']
+        states_config = {
+          geo_data: us_lowres,
+          data: states_data,
+          max: 3,
+          width: 400,
+          height: 200
+        },
+        states_map = new StatePicker(states_config);
+    states_map.render();
+  </script>
+</div>
