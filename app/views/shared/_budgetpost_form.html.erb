@@ -8,7 +8,7 @@
 <text pointer-events="all" cursor="pointer" x="-25" dy=".35em" transform="translate(0,9)" fill="rgb(0,0,0)" text-anchor="end" style="font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal; font-size: 12px; line-height: normal; font-family: sans-serif;">Estate and gift taxes</text>  <image preserveAspectRatio="none" cursor="pointer" x="-20" y="2" width="16" height="16" xmlns:xlink="http://www.w3.org/1999/xlink" src="/images/annotation-icon.png"></image><rect pointer-events="all" x="232.5" y="25" width="155" height="140" fill-opacity="0"></rect><input type="range" min="0" max="2000" id="myRange"/><div class="text"></div>
 </div>
 <div class="range-wrapper">
-<text pointer-events="all" cursor="pointer" x="-25" dy=".35em" transform="translate(0,9)" fill="rgb(0,0,0)" text-anchor="end" style="font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal; font-size: 12px; line-height: normal; font-family: sans-serif;">Custom duties</text> <image preserveAspectRatio="none" cursor="pointer" x="-20" y="2" width="16" height="16" xmlns:xlink="http://www.w3.org/1999/xlink" src="/images/annotation-icon.png"> <input type="range" min="0" max="20" id="mySecondRange" transform="translate(232.5,25)"/>
+<text pointer-events="all" cursor="pointer" x="-25" dy=".35em" transform="translate(0,9)" fill="rgb(0,0,0)" text-anchor="end" style="font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal; font-size: 12px; line-height: normal; font-family: sans-serif;">Custom duties</text> <image preserveAspectRatio="none" cursor="pointer" x="-20" y="2" width="16" height="16" xmlns:xlink="http://www.w3.org/1999/xlink" src="/images/annotation-icon.png"> <input type="range" min="0" max="2000" id="mySecondRange" transform="translate(232.5,25)"/>
   <div class="text"></div>
 </div>
 <h5 style="position:relative;background:#f9f9f9;padding:5px 0px;margin:0;border-bottom:1px solid #ddd;">Expenses<br>&nbsp;<span id="total_expense_0" style="display:none;">$ -46,676,614,000,000.00</span><span id="total_expense_display_0" style="position:absolute;bottom:5px; top:25px;left:0px;font-family:mono;font-size:0.8em;">$&nbsp;-46,676,614&nbsp;Million</span></h5>
@@ -46,7 +46,7 @@ function getRangeGradient(color1,color2,value,maximum){
     return attrValue;
 }
 function updateRangeValue(input){
-    var selectedColor = "#428bca";
+    var selectedColor = "#a6d96a";
     var nonSelectedColor = "#ddd";
 
     var value = input.val();
