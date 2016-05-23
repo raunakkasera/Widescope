@@ -26,4 +26,29 @@
   	application.
 	</p>
   <%= link_to "Sign up now!", signup_path, class: "btn btn-lg btn-primary" %>
+  <br /><br /> Changing the budget deficit has never been this easy... <br /><br />
+
+  <div style="position:relative;text-align:center;margin-left:-1em;">
+                <a id="watch-video" href="#" style="display:block;width:100%;height:100%;position:absolute;text-align:center;top:0;left:0;">&nbsp;</a>
+                <object width="325" height="247" text-align="center"><param name="movie" value="http://www.youtube.com/v/PrLpJwbaOrA?version=3&amp;hl=en_US&amp;rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/PrLpJwbaOrA?version=3&amp;hl=en_US&amp;rel=0" type="application/x-shockwave-flash" width="250" height="175" text-align="center" allowscriptaccess="always" allowfullscreen="true"></embed></object>
+  </div>
+              <div id="video-dialog" style="display:none;padding:0;">
+                <object width="640" height="480"><param name="movie" value="http://www.youtube.com/v/PrLpJwbaOrA?version=3&amp;hl=en_US&amp;rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/PrLpJwbaOrA?version=3&amp;hl=en_US&amp;rel=0"  width="640" height="480" allowscriptaccess="always" allowfullscreen="true"></embed></object>
+              </div>
+              <script type="text/javascript">
+                $(function () {
+                  $('#video-dialog').dialog({
+                    autoOpen: false
+                  });
+                $('#watch-video').unbind('click');
+                $('#watch-video').bind('click', function(event) {
+                  $('#video-dialog').dialog({
+                    modal: true,
+                    width: 640,
+                    resizable: false
+                  });
+                  event.preventDefault();
+                  return false;
+                });});
+              </script>
 </div><% end %>
