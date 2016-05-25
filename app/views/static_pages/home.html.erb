@@ -43,7 +43,12 @@
                     modal: true,
                     width: 640,
                     resizable: false,
-                    draggable: true
+                    draggable: true,
+                    open: function(){
+            jQuery('.ui-widget-overlay').bind('click',function(){
+                jQuery('#video-dialog').dialog('close');
+            })
+        }
                   });
                   event.preventDefault();
                   return false;
