@@ -1,7 +1,12 @@
 
 class BudgetpostsController < ApplicationController
-  before_action :logged_in_user, only: [:create, :destroy]
-  before_action :correct_user,   only: :destroy
+  before_action :logged_in_user, only: [:create, :destroy, :index, :show, :edit]
+  before_action :correct_user,   only: :destro
+ 
+ def index
+  show
+  render 'show'
+ end
 
   def create
     @budgetpost = current_user.budgetposts.build(budgetpost_params)

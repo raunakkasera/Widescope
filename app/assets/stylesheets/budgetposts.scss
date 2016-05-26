@@ -2,8 +2,10 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 .range-wrapper {
-  overflow: hidden;
-  padding: 10px 0px;    
+  overflow: visible;
+  text-overflow: ellipsis;
+  white-space: wrap;
+
 } 
 .range-wrapper > div {
   position: relative;
