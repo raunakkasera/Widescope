@@ -14,7 +14,7 @@
 }
 .range-wrapper > .text {
   pointer-events: none;
-  
+
 }
 input[type=range]{
   -webkit-appearance: none;
@@ -23,14 +23,14 @@ input[type=range]{
 input[type=range]::-webkit-slider-runnable-track {
   width: 3px;
   height: 18px;   
-  border: none; 
+  border: none;
   border-radius: 0px;
 }
 input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
   border: none; /*1px solid #e95e57;*/
   height: 8px;
-  width: 8px;
+  width: 10px;
   border-radius: 50%;
   background: black;
   margin-top: 5px;
