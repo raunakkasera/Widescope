@@ -42,7 +42,7 @@ function getRangeGradient(color1,color2,divider,value,maximum){
     var gradient = "linear-gradient(to right, ";
     var breakPoint = (value/maximum)*100;
     
-    var attrValue = gradient + color1 + " 0%, " + color1 + " " + (breakPoint-0.25) + "%, " + divider + " " + (breakPoint-0.5) + "%, " + divider + " " + (breakPoint + 0.25) + "%, " + color2 + " " + (breakPoint + 0.25) + "%, " + color2 + " 100%)";
+    var attrValue = gradient + color1 + " 0%, " + color1 + " " + (breakPoint - 0.25) + "%, " + divider + " " + (breakPoint-0.5) + "%, " + divider + " " + (breakPoint + 0.25) + "%, " + color2 + " " + (breakPoint + 0.25) + "%, " + color2 + " 100%)";
     return attrValue;
 }
 function updateRangeValue(input){
