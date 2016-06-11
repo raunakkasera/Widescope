@@ -1,0 +1,28 @@
+// Place all the styles related to the Annotations controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+.annotations{
+  margin:10px 0;
+}
+
+.annotations div.non-stored{
+  background-color: #FFFFE1;
+}
+
+.annotations .annotation{
+  margin-top:3px;
+}
+
+.annotations div.pic, .annotations div.user{
+  float:left;
+  padding:5px;
+}
+
+.annotations div.pic, .annotations div.pic img{
+	width: 16px;
+	height:16px;
+}
+
+.annotations div span.username, .annotations div span.new_val{
+  font-weight:bold;
+}
