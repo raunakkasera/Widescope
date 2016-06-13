@@ -24,5 +24,6 @@ module WideScope
     config.active_record.raise_in_transactional_callbacks = true
     # Include the authenticity token in remote forms.
     config.action_view.embed_authenticity_token_in_remote_forms = true
+    config.assets.initialize_on_precompile = false
   end
 end
